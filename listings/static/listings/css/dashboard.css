@@ -1,0 +1,14 @@
+/* static/listings/css/dashboard.css */
+
+.summary-card .card-body { padding: 1.25rem; }
+.display-6 { font-size: 2rem; font-weight: 700; }
+.chart-card { min-height: 260px; }
+.list-group .list-group-item { display:flex; justify-content:space-between; align-items:center; }
+.table-responsive { max-height: 360px; overflow:auto; }
+.card h5 { margin-bottom: 0.75rem; }
+.muted-small { font-size: 0.9rem; color: #6c757d; }
+
+@media (max-width: 767px) {
+  .display-6 { font-size: 1.6rem; }
+  .chart-card { min-height: 220px; }
+}

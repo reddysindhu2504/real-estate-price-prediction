@@ -1,0 +1,44 @@
+{% extends "listings/base_minimal.html" %}
+{% load static %}
+{% block title %}Welcome — Real Estate AI{% endblock %}
+
+{% block content %}
+<div class="auth-hero">
+  <div class="auth-inner row gx-0 align-items-center">
+    <!-- Left spacer column -->
+    <div class="col-12 col-lg-2 d-none d-lg-flex justify-content-center">
+      <a href="{% url 'login' %}" class="pill pill-left" title="Log in">
+        <span>Log<br>in</span>
+      </a>
+    </div>
+
+    <!-- Center column: giant stacked words -->
+    <div class="col-12 col-lg-8 text-center">
+      <h1 class="hero-top">Real Estate Price Predictor</h1>
+      <p class="hero-sub">Sign in or create an account to continue</p>
+
+      <div class="stacked-words" aria-hidden="true">
+        <span class="stack-word">welcome</span>
+        <span class="stack-word">to</span>
+        <span class="stack-word">your</span>
+        <span class="stack-word">dream</span>
+      </div>
+
+      <p class="lead text-muted mt-4">Predict property prices fast — sign up and start estimating.</p>
+    </div>
+
+    <!-- Right spacer column -->
+    <div class="col-12 col-lg-2 d-none d-lg-flex justify-content-center">
+      <a href="{% url 'signup' %}" class="pill pill-right" title="Sign up">
+        <span>Sign<br>up</span>
+      </a>
+    </div>
+
+    <!-- On small screens show both buttons under the text -->
+    <div class="col-12 d-flex d-lg-none justify-content-center gap-3 mt-4">
+      <a href="{% url 'login' %}" class="btn btn-outline-primary px-4 py-2">Log in</a>
+      <a href="{% url 'signup' %}" class="btn btn-primary px-4 py-2">Sign up</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

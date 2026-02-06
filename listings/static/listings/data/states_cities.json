@@ -1,0 +1,21 @@
+{
+  "andhra pradesh": [
+    "Visakhapatnam",
+    "Anantapuram",
+    "Vizianagaram",
+    "Kadapa",
+    "Kurnool"
+  ],
+  "Uttar Pradesh": [
+    "Lucknow",
+    "Noida",
+    "Greater Noida",
+    "Kanpur",
+    "Varanasi"
+  ],
+  "west bengal": [
+    "Kolkata",
+    "Durgapur",
+    "Siliguri"
+  ]
+}

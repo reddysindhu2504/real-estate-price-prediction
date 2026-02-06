@@ -1,0 +1,223 @@
+{% extends "listings/base_land.html" %}
+
+{% block content %}
+
+<style>
+:root{
+  --bg:#020617;
+  --card:#0f172a;
+  --border:#1f2937;
+  --text:#e5e7eb;
+  --muted:#9ca3af;
+
+  --blue:#38bdf8;
+  --green:#22c55e;
+  --orange:#f59e0b;
+  --purple:#a78bfa;
+}
+
+/* PAGE */
+.dashboard-bg{
+  min-height:100vh;
+  padding:40px 0 70px;
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* HEADER */
+.dashboard-title{
+  font-size:22px;
+  font-weight:700;
+}
+.dashboard-sub{
+  font-size:14px;
+  color:var(--muted);
+}
+
+/* CARD */
+.card-clean{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:24px;
+}
+
+/* CARD TITLE */
+.card-title{
+  font-size:15px;
+  font-weight:600;
+  margin-bottom:14px;
+}
+
+/* CHART */
+canvas{
+  max-height:280px;
+}
+
+/* TEXT */
+.insight-text{
+  font-size:14px;
+  line-height:1.8;
+  color:var(--muted);
+}
+</style>
+
+<div class="dashboard-bg">
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="mb-4">
+    <h3 class="dashboard-title">Land Analytics</h3>
+    <p class="dashboard-sub mb-0">
+      State-wise pricing, plot distribution & market overview
+    </p>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="row">
+
+    <!-- BAR CHART -->
+    <div class="col-md-7 mb-4">
+      <div class="card-clean h-100">
+        <div class="card-title">State-wise Average Price (₹)</div>
+        <canvas id="stateChart"></canvas>
+      </div>
+    </div>
+
+    <!-- PIE CHART -->
+    <div class="col-md-5 mb-4">
+      <div class="card-clean h-100">
+        <div class="card-title">Plot Type Distribution</div>
+        <canvas id="plotChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- INSIGHTS -->
+  <div class="row mt-4">
+
+    <div class="col-md-8 mb-4">
+      <div class="card-clean h-100">
+        <div class="card-title">Key Insights</div>
+        <ul class="insight-text">
+          <li>
+            Land prices show noticeable variation across states,
+            indicating differences in regional demand and development.
+          </li>
+          <li>
+            Higher average prices generally reflect stronger economic
+            activity and better infrastructure availability.
+          </li>
+          <li>
+            Commercial plots form a significant share of the market,
+            highlighting increasing urban and business expansion.
+          </li>
+          <li>
+            Residential and agricultural plots maintain steady demand,
+            contributing to overall market stability.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="card-clean h-100">
+        <div class="card-title">Market Summary</div>
+        <p class="insight-text">
+          This dashboard provides a high-level analytical view of land
+          pricing patterns and plot-type distribution.
+          The insights support informed decision-making by identifying
+          demand trends and relative market strength.
+        </p>
+        <hr style="border-color:#1f2937">
+        <p class="insight-text mb-0">
+          Data is generated dynamically from prediction outputs.
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<script>
+/* DATA FROM DJANGO */
+const states = {{ states|safe }};
+const avgPrices = {{ avg_prices|safe }};
+const plotLabels = {{ plot_labels|safe }};
+const plotCounts = {{ plot_counts|safe }};
+
+/* BAR COLORS */
+const barColors = [
+  "#38bdf8",
+  "#22c55e",
+  "#f59e0b",
+  "#a78bfa",
+  "#9ca3af"
+];
+
+/* STATE BAR CHART */
+new Chart(document.getElementById("stateChart"), {
+  type: "bar",
+  data: {
+    labels: states,
+    datasets: [{
+      data: avgPrices,
+      backgroundColor: states.map((_,i)=>barColors[i%barColors.length]),
+      borderRadius:6
+    }]
+  },
+  options: {
+    plugins:{
+      legend:{ display:false },
+      tooltip:{
+        backgroundColor:"#020617",
+        titleColor:"#fff",
+        bodyColor:"#e5e7eb",
+        callbacks:{
+          label:(ctx)=>" ₹ " + ctx.raw
+        }
+      }
+    },
+    scales:{
+      x:{ ticks:{color:"#9ca3af"}, grid:{display:false}},
+      y:{ ticks:{color:"#9ca3af"}, grid:{color:"#1f2937"}}
+    }
+  }
+});
+
+/* PIE CHART */
+new Chart(document.getElementById("plotChart"), {
+  type: "pie",
+  data: {
+    labels: plotLabels,
+    datasets: [{
+      data: plotCounts,
+      backgroundColor: [
+        "#22c55e",   // Agricultural
+        "#38bdf8",   // Commercial
+        "#f59e0b"    // Residential
+      ],
+      borderColor:"#020617",
+      borderWidth:1
+    }]
+  },
+  options:{
+    plugins:{
+      legend:{
+        position:"bottom",
+        labels:{ color:"#e5e7eb", boxWidth:14 }
+      },
+      tooltip:{
+        backgroundColor:"#020617",
+        titleColor:"#fff",
+        bodyColor:"#e5e7eb"
+      }
+    }
+  }
+});
+</script>
+
+{% endblock %}

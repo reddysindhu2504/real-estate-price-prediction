@@ -1,0 +1,11 @@
+{
+  "Andhra Pradesh": ["Anantapur", "Chittoor", "Kadapa", "Kurnool", "Nellore", "Vijayawada", "Guntur"],
+  "Telangana": ["Hyderabad", "Rangareddy", "Medchal", "Karimnagar", "Warangal"],
+  "Karnataka": ["Bengaluru Urban", "Mysore", "Mangalore", "Davanagere"],
+  "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik"],
+  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Trichy"],
+  "Punjab": ["Ludhiana"],
+  "Rajasthan": ["Jodhpur", "Jaipur"],
+  "Delhi": ["New Delhi"],
+  "Haryana": ["Gurgaon"]
+}

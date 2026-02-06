@@ -1,0 +1,75 @@
+{% extends "listings/base_land.html" %}
+
+{% block content %}
+
+<div class="container mt-4 mb-5">
+
+  <h3 class="fw-bold mb-3">
+    📘 Land Price Prediction – System Details
+  </h3>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+
+      <ul class="list-group list-group-flush">
+
+        <li class="list-group-item">
+          <b>Algorithm Used:</b> Artificial Neural Network (ANN)
+        </li>
+
+        <li class="list-group-item">
+          <b>Model Type:</b> Deep Learning – Neural Network based Price Predictor
+        </li>
+
+        <li class="list-group-item">
+          <b>Learning Approach:</b>
+          Supervised Learning using Artificial Neural Networks (ANN)
+        </li>
+
+        <li class="list-group-item">
+          <b>Prediction Task:</b>
+          Continuous numerical price estimation for land properties
+        </li>
+
+        <li class="list-group-item">
+          <b>Dataset Used:</b> {{ dataset }}
+        </li>
+
+        <li class="list-group-item">
+          <b>Data Preprocessing:</b>
+          <ul class="mb-0">
+            <li>Encoding categorical features (State, City, Plot Type)</li>
+            <li>Numerical feature normalization (Land Area)</li>
+            <li>Validation and cleaning of input data</li>
+          </ul>
+        </li>
+
+        <li class="list-group-item">
+          <b>Input Features:</b>
+          <ul class="mb-0">
+            {% for f in features %}
+              <li>{{ f }}</li>
+            {% endfor %}
+          </ul>
+        </li>
+
+        <li class="list-group-item">
+          <b>Output:</b> {{ output }}
+        </li>
+
+        <li class="list-group-item">
+          <b>System Objective:</b>
+          To provide an AI-driven land price estimation system using deep
+          learning techniques, enabling accurate valuation based on
+          geographical location and land characteristics without relying
+          on traditional regression-based methods.
+        </li>
+
+      </ul>
+
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

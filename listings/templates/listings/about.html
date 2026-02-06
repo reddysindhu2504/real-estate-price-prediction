@@ -1,0 +1,59 @@
+{% extends "listings/base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="about-container card p-4 shadow-lg" style="max-width: 850px; margin: 40px auto;">
+  
+  <div class="text-center mb-3">
+    <h2 class="fw-bold" style="color: var(--accent-plain); font-size: 1.8rem;">
+      🏗️ Construction Cost Prediction
+    </h2>
+    <p class="text-muted" style="font-size: 0.95rem;">
+      AI-powered construction cost estimation using Deep Learning.
+    </p>
+  </div>
+
+  <hr style="opacity: 0.1;">
+
+  <p style="line-height: 1.7; font-size: 1rem;">
+    The <strong>Construction Cost Prediction Module</strong> is an intelligent system
+    that estimates building construction costs using an
+    <strong>Artificial Neural Network (ANN)</strong>.
+    This approach captures complex relationships between construction parameters
+    and total cost.
+  </p>
+
+  <p style="line-height: 1.7;">
+    Users provide the following construction details:
+  </p>
+
+  <ul style="line-height: 1.7; margin-left: 20px;">
+    <li>State and City</li>
+    <li>Built-up Area (sq.ft)</li>
+    <li>Number of Bedrooms (BHK) & Bathrooms</li>
+    <li>Age of the Building</li>
+  </ul>
+
+  <p style="line-height: 1.7;">
+    The input data is preprocessed and passed through multiple hidden layers
+    of the ANN model, which learns non-linear patterns from historical
+    construction cost data and produces an accurate cost prediction.
+  </p>
+
+  <p style="line-height: 1.7;">
+    The system also maintains a history of predictions, allowing users
+    to review previous estimates for better planning and analysis.
+  </p>
+
+  <div class="card mt-4 p-3" style="background: var(--glass); border-radius: 12px;">
+    <p class="mb-1"><strong>Domain:</strong> Artificial Intelligence & Deep Learning</p>
+    <p class="mb-0">
+      <strong>Technologies Used:</strong>
+      Python, Artificial Neural Networks (ANN), TensorFlow, Scikit-learn,
+      Django, HTML, CSS, Bootstrap
+    </p>
+  </div>
+
+</div>
+
+{% endblock %}

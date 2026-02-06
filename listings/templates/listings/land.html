@@ -1,0 +1,246 @@
+{% extends "listings/base_land.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+:root{
+  --g1:#6366f1;
+  --g2:#22d3ee;
+  --g3:#a78bfa;
+}
+
+/* ===== BACKGROUND ===== */
+.page{
+  min-height:100vh;
+  padding:70px 0; /* ⬅️ middle thaggincha */
+  background:
+    radial-gradient(circle at 10% 20%,rgba(99,102,241,.25),transparent 40%),
+    radial-gradient(circle at 90% 80%,rgba(34,211,238,.25),transparent 40%),
+    linear-gradient(135deg,#f8fafc,#eef2ff);
+  position:relative;
+  overflow:hidden;
+}
+
+/* floating blobs */
+.page::before,.page::after{
+  content:"";
+  position:absolute;
+  width:260px;height:260px;
+  border-radius:50%;
+  filter:blur(80px);
+  opacity:.30;
+  z-index:0;
+}
+.page::before{
+  background:#6366f1;
+  top:-70px;left:-70px;
+}
+.page::after{
+  background:#22d3ee;
+  bottom:-70px;right:-70px;
+}
+
+/* ===== CARD ===== */
+.card-box{
+  position:relative;
+  z-index:1;
+  background:rgba(255,255,255,.88);
+  backdrop-filter:blur(18px);
+  border-radius:24px;
+  padding:45px; /* ⬅️ koncham tight */
+  box-shadow:0 25px 50px rgba(0,0,0,.16);
+  overflow:hidden;
+  transition:.4s;
+}
+
+.card-box:hover{
+  transform:translateY(-6px);
+  box-shadow:0 35px 70px rgba(0,0,0,.2);
+}
+
+/* animated border */
+.card-box::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  padding:2px;
+  border-radius:24px;
+  background:linear-gradient(120deg,var(--g1),var(--g2),var(--g3));
+  background-size:300% 300%;
+  animation:borderMove 7s linear infinite;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;
+  pointer-events:none;
+}
+
+@keyframes borderMove{
+  0%{background-position:0% 50%}
+  100%{background-position:300% 50%}
+}
+
+/* ===== HEADER ===== */
+.title{
+  font-weight:900;
+  font-size:32px;
+  background:linear-gradient(135deg,var(--g1),var(--g2));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.header-line{
+  width:90px;
+  height:4px;
+  margin:14px auto;
+  border-radius:10px;
+  background:linear-gradient(90deg,var(--g1),var(--g2));
+}
+
+.subtitle{
+  color:#475569;
+  font-size:14px;
+}
+
+/* ===== FORM ===== */
+.form-label{
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:1.1px;
+  color:#334155;
+}
+
+.form-control{
+  border-radius:14px;
+  padding:14px 16px;
+  border:1px solid #cbd5e1;
+  transition:.3s;
+}
+
+.form-control:focus{
+  border-color:var(--g1);
+  box-shadow:0 0 0 3px rgba(99,102,241,.22);
+  transform:translateY(-1px);
+}
+
+/* ===== BUTTON ===== */
+.btn-predict{
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(135deg,var(--g1),var(--g2));
+  color:#fff;
+  border:none;
+  padding:16px;
+  border-radius:18px;
+  font-weight:900;
+  letter-spacing:.6px;
+}
+
+.btn-predict::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(120deg,transparent,rgba(255,255,255,.45),transparent);
+  transform:translateX(-100%);
+  animation:shine 3s infinite;
+}
+
+@keyframes shine{
+  to{transform:translateX(100%)}
+}
+
+/* ===== RESULT ===== */
+.result{
+  margin-top:45px;
+  padding:30px;
+  border-radius:24px;
+  background:linear-gradient(135deg,#ecfeff,#eef2ff);
+  box-shadow:0 20px 45px rgba(0,0,0,.18);
+  text-align:center;
+  position:relative;
+  animation:pop .6s ease;
+}
+
+@keyframes pop{
+  from{transform:scale(.9);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+
+.result::before{
+  content:"";
+  position:absolute;
+  top:-3px;left:25%;right:25%;
+  height:4px;
+  border-radius:10px;
+  background:linear-gradient(90deg,var(--g1),var(--g2));
+}
+</style>
+
+<div class="page">
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="text-center mb-4">
+    <h1 class="title">🏡 Land Price Prediction</h1>
+    <div class="header-line"></div>
+    <p class="subtitle">Smart, location-based land value estimation</p>
+  </div>
+
+  <!-- FORM -->
+  <div class="card-box mx-auto" style="max-width:900px">
+    <form method="post">
+      {% csrf_token %}
+      <div class="row g-4">
+
+        <div class="col-md-6">
+          <label class="form-label">STATE</label>
+          <select id="stateSelect" name="state" class="form-control" required>
+            <option value="">Select State</option>
+          </select>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">CITY</label>
+          <select id="citySelect" name="city" class="form-control" required>
+            <option value="">Select City</option>
+          </select>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">PLOT TYPE</label>
+          <select name="plot_type" class="form-control" required>
+            <option value="">Select Type</option>
+            <option>Residential Plot</option>
+            <option>Commercial Plot</option>
+            <option>Agricultural Plot</option>
+          </select>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">AREA (Sq.ft)</label>
+          <input type="number" name="Area" class="form-control" required>
+        </div>
+
+      </div>
+
+      <button class="btn-predict w-100 mt-4">
+        🚀 Predict Land Price
+      </button>
+    </form>
+  </div>
+
+  <!-- RESULT -->
+  {% if result %}
+  <div class="result mx-auto" style="max-width:560px">
+    <small class="text-muted">Estimated Market Value</small>
+    <h2 class="fw-bold mt-2">₹ {{ result|floatformat:0 }}</h2>
+    <p class="mb-0 text-muted">Generated using location & area patterns</p>
+  </div>
+  {% endif %}
+
+</div>
+</div>
+
+<script src="{% static 'listings/js/state_city_loader.js' %}"></script>
+
+{% endblock %}

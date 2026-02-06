@@ -1,0 +1,25 @@
+{% extends "listings/base.html" %}
+{% block content %}
+
+<h3 class="fw-bold mb-3">Login History</h3>
+
+<table class="table table-bordered">
+  <thead class="table-dark">
+    <tr>
+      <th>Login Time</th>
+      <th>Logout Time</th>
+      <th>IP Address</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in records %}
+    <tr>
+      <td>{{ r.login_time }}</td>
+      <td>{{ r.logout_time|default:"Active" }}</td>
+      <td>{{ r.ip_address }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

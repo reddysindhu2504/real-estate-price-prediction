@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Land Prediction</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    /* ================= FIXED NAVBAR ================= */
+    .neural-navbar{
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 9999;
+
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(14px);
+
+      border-bottom: 1px solid rgba(0, 255, 213, 0.35);
+      box-shadow: 0 0 30px rgba(0, 255, 213, 0.35);
+    }
+
+    .neural-navbar .navbar-brand{
+      font-weight: 800;
+      color: #00ffd5 !important;
+      letter-spacing: .5px;
+    }
+
+    .neural-navbar .nav-link{
+      color: #d6faff !important;
+      font-weight: 600;
+      position: relative;
+      padding-bottom: 6px;
+    }
+
+    /* ACTIVE LINK */
+    .neural-navbar .nav-link.active{
+      color: #00ffd5 !important;
+    }
+
+    .neural-navbar .nav-link.active::after{
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 2px;
+      background: #00ffd5;
+      box-shadow: 0 0 12px #00ffd5;
+    }
+
+    /* HOVER EFFECT */
+    .neural-navbar .nav-link:hover{
+      color: #00ffd5 !important;
+      text-shadow: 0 0 10px #00ffd5;
+    }
+
+    /* CONTENT OFFSET */
+    body{
+      padding-top: 85px;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar navbar-expand-lg neural-navbar">
+  <div class="container">
+
+    <!-- BRAND -->
+    <a class="navbar-brand" href="{% url 'land' %}">
+      🧠 Land AI
+    </a>
+
+    <!-- TOGGLER -->
+    <button class="navbar-toggler bg-dark" type="button"
+            data-bs-toggle="collapse" data-bs-target="#landNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- LINKS -->
+    <div class="collapse navbar-collapse" id="landNav">
+      <ul class="navbar-nav ms-auto gap-4">
+
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/land/' %}active{% endif %}"
+             href="{% url 'land' %}">
+            Home
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link {% if 'history' in request.path %}active{% endif %}"
+             href="{% url 'land_history' %}">
+            History
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link {% if 'dashboard' in request.path %}active{% endif %}"
+             href="{% url 'land_dashboard' %}">
+            Dashboard
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link {% if 'details' in request.path %}active{% endif %}"
+             href="{% url 'land_details' %}">
+            Details
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'choose' %}">
+            Switch
+          </a>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ================= PAGE CONTENT ================= -->
+<div class="container mt-5 mb-5">
+  {% block content %}
+  {% endblock %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

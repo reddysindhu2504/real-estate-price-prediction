@@ -1,0 +1,142 @@
+{% extends "listings/base.html" %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+
+<div class="form-container card shadow-lg p-4 mx-auto"
+     style="max-width: 800px; border-radius: 12px; background-color: #ffffff;">
+
+  <!-- Header -->
+  <div class="text-center mb-3">
+    <h2 class="text-primary fw-bold">🏗️ Construction Cost Prediction</h2>
+    <p class="text-muted">
+      Enter basic property details to get ANN-based construction cost estimation.
+    </p>
+  </div>
+
+  <!-- Django messages -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags|default:'info' }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Form errors -->
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger">
+      {{ form.non_field_errors }}
+    </div>
+  {% endif %}
+
+  {% for field in form %}
+    {% if field.errors %}
+      <div class="text-danger small mb-1">
+        {{ field.label }}: {{ field.errors|join:", " }}
+      </div>
+    {% endif %}
+  {% endfor %}
+
+  <!-- Prediction Form -->
+  <form method="POST" novalidate>
+    {% csrf_token %}
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">State</label>
+        {{ form.state }}
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">City</label>
+        {{ form.district }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Built-up Area (sq.ft)</label>
+        {{ form.size_sqft }}
+      </div>
+      <div class="col-md-3 mb-3">
+        <label class="form-label">BHK</label>
+        {{ form.bedrooms }}
+      </div>
+      <div class="col-md-3 mb-3">
+        <label class="form-label">Bathrooms</label>
+        {{ form.bathrooms }}
+      </div>
+    </div>
+
+    <!-- ONLY AGE OF BUILDING CENTERED -->
+    <div class="row justify-content-center">
+      <div class="col-md-4 mb-3">
+        <label class="form-label text-center d-block">
+          Age of Building (Years)
+        </label>
+        {{ form.age }}
+      </div>
+    </div>
+
+    {{ form.country }}
+
+    <button type="submit" class="btn btn-primary w-100 mt-2">
+      🔍 Predict Construction Cost
+    </button>
+  </form>
+
+  <!-- Prediction Result -->
+  {% if result_lakhs or result %}
+    <div class="alert alert-success text-center mt-4 shadow-sm">
+      {% if result_lakhs %}
+        <h4 class="mb-1">
+          Estimated Construction Cost: {{ result_lakhs|floatformat:4 }} Lakhs
+        </h4>
+        {% if result %}
+          <div class="small text-muted">
+            (~ ₹{{ result|floatformat:0|intcomma }})
+          </div>
+        {% endif %}
+      {% else %}
+        <h4 class="mb-1">
+          Estimated Construction Cost: ₹{{ result|floatformat:0|intcomma }}
+        </h4>
+      {% endif %}
+
+      {% if saved_state or saved_district %}
+        <p class="small text-muted mt-1">
+          Location: {{ saved_district }}{% if saved_state %}, {{ saved_state }}{% endif %}
+        </p>
+      {% endif %}
+    </div>
+
+    <!-- Contacts -->
+    <div class="card mt-4 shadow-sm">
+      <div class="card-body">
+        <h5 class="fw-bold">Local Construction Contacts</h5>
+
+        {% if contacts %}
+          <ul class="list-group">
+            {% for c in contacts %}
+              <li class="list-group-item">
+                <strong>{{ c.name }}</strong><br>
+                {% if c.locality %}{{ c.locality }} — {% endif %}
+                {{ c.district }}, {{ c.state }}<br>
+                📞 <a href="tel:{{ c.phone }}">{{ c.phone }}</a>
+                {% if c.email %}
+                  | ✉️ <a href="mailto:{{ c.email }}">{{ c.email }}</a>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-muted">No local contacts found.</p>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+</div>
+
+<script src="{% static 'listings/js/location_cascade.js' %}"></script>
+{% endblock %}

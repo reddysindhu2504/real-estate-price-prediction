@@ -1,0 +1,100 @@
+{% extends "listings/base.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+  .details-card {
+    max-width: 800px;
+    margin: 3rem auto;
+    padding: 32px;
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(6px);
+    border-radius: 16px;
+    border: 1px solid #e0e4ea;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.08);
+  }
+  .details-title {
+    font-weight: 700;
+    font-size: 1.7rem;
+    color: #0d6efd;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .details-subtext {
+    font-size: 0.95rem;
+    color: #6c757d;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .details-list li {
+    font-size: 1.05rem;
+    padding: 8px 0;
+  }
+  .tag-box {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #e8f0ff;
+    color: #0d6efd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    margin-right: 6px;
+    margin-bottom: 4px;
+  }
+</style>
+
+<div class="details-card">
+
+  <h2 class="details-title">Construction Model Details</h2>
+  <p class="details-subtext">
+    Technical overview of the Artificial Neural Network used for construction cost prediction.
+  </p>
+
+  <ul class="details-list">
+    <li>
+      <strong>Algorithm:</strong>
+      Artificial Neural Network (ANN)
+    </li>
+
+    <li>
+      <strong>Model Type:</strong>
+      Deep Learning – Cost Prediction 
+    </li>
+
+    <li>
+      <strong>Input Features:</strong><br>
+      <span class="tag-box">State</span>
+      <span class="tag-box">City</span>
+      <span class="tag-box">Built-up Area (sq.ft)</span>
+      <span class="tag-box">Number of Bedrooms (BHK) & Bathrooms</span>
+      <span class="tag-box">Age of Building</span>
+    </li>
+
+    <li>
+      <strong>Output:</strong>
+      Estimated Construction Cost (₹ in Lakhs)
+    </li>
+
+    <li>
+      <strong>Deep Learning Framework:</strong>
+      TensorFlow / Keras
+    </li>
+
+    <li>
+      <strong>Backend Integration:</strong>
+      Django (Model loaded using Joblib)
+    </li>
+
+    <li>
+      <strong>Model Storage:</strong>
+      <code>/model/construction_ann_pipeline.joblib</code>
+    </li>
+
+    <li>
+      <strong>Processing Flow:</strong>
+      Input → Preprocessing → ANN Hidden Layers → Cost Prediction
+    </li>
+  </ul>
+
+</div>
+
+{% endblock %}

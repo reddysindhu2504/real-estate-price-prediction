@@ -1,0 +1,206 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Real Estate — Welcome</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+  /* ===== RESET & NO-SCROLL ===== */
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{height:100%;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+  body{
+    font-family:"Poppins",system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+    color:#fff;
+    overflow:hidden;            /* IMPORTANT: disable page scroll */
+    -webkit-overflow-scrolling: auto;
+    background: #061022;
+  }
+
+  /* ===== BACKGROUND IMAGE (fixed, cover) ===== */
+  .hero-bg{
+    position:fixed; inset:0; z-index:-2;
+    background:
+      linear-gradient(180deg, rgba(6,10,20,0.28), rgba(6,10,20,0.60)),
+      url("{% static 'listings/img/ai-generated-real-estate-advertisment-background-with-copy-space-free-photo.jpg' %}") center center / cover no-repeat fixed;
+    filter: saturate(1.02) contrast(1.02);
+    will-change:transform;
+  }
+
+  /* Center container fills viewport exactly (no scroll) */
+  .center-wrap{
+    position:relative;
+    width:100%;
+    height:100vh;               /* FULL viewport height */
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;     /* vertical center */
+    padding: 40px 36px;        /* keep small so fits */
+    gap:18px;
+    text-align:center;
+    pointer-events:auto;
+    z-index:10;
+  }
+
+  /* Card visual (slightly inset so background visible) */
+  .card{
+    width:min(1100px,92vw);
+    border-radius:20px;
+    padding: clamp(18px, 2.4vh, 46px);
+    background: rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.07);
+    box-shadow: 0 40px 100px rgba(0,0,0,0.45);
+    backdrop-filter: blur(12px) saturate(120%);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+  }
+
+  /* Tiny responsive scale helper:
+     If height is too small, scale the card down so it never overflows */
+  @media (max-height:640px){
+    .card{ transform: scale(0.92); transform-origin: center; }
+  }
+  @media (max-height:560px){
+    .card{ transform: scale(0.84); }
+  }
+
+  /* Top note */
+  .top-note{
+    font-weight:600;
+    font-size:0.92rem;
+    color: rgba(235,245,255,0.92);
+    padding:6px 12px;
+    border-radius:999px;
+    background: rgba(255,255,255,0.025);
+  }
+
+  /* Title lines — use clamp to always fit */
+  .big-title{ line-height:0.92; margin:6px 0 4px; }
+  .big-title .line{
+    display:block;
+    font-weight:800;
+    color:#f8fbff;
+    font-size: clamp(30px, 5.2vw, 72px); /* clamps to fit width */
+    letter-spacing:-1.1px;
+    margin:4px 0;
+  }
+
+  /* Subtitle */
+  .sub{
+    max-width: 84ch;
+    font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+    color: rgba(240,250,255,0.92);
+    margin-top:6px;
+    line-height:1.45;
+  }
+
+  /* Buttons - compact to avoid overflow */
+  .btns{
+    display:flex;
+    gap:14px;
+    justify-content:center;
+    margin-top:6px;
+    flex-wrap:nowrap;
+  }
+  .btn{
+    padding:10px 30px;
+    border-radius:12px;
+    font-weight:700;
+    text-decoration:none;
+    font-size:0.98rem;
+    transition: transform .18s;
+    display:inline-flex; align-items:center; justify-content:center;
+  }
+  .btn-login{
+    background: rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.10);
+    color: #f2f8ff;
+  }
+  .btn-signup{
+    background: linear-gradient(90deg,#0d58ff,#45d4ff);
+    color:white;
+    box-shadow:0 20px 56px rgba(13,88,255,0.22);
+  }
+  .btn:active,.btn:focus{ outline:none; transform:translateY(-3px); }
+
+  /* Small feature row fits in one line or wraps but card scales before wrap */
+  .features{
+    display:flex; gap:12px; margin-top:10px; justify-content:center; flex-wrap:wrap;
+    font-size:0.92rem; color:rgba(240,250,255,0.88);
+  }
+  .feat{ padding:6px 10px; border-radius:10px; background:rgba(255,255,255,0.02); }
+
+  /* Image-credit tucked but small */
+  .hero-credit{ font-size:11px; color:rgba(255,255,255,0.6); margin-top:6px; }
+
+  /* Ensure no element creates page scroll (max heights) */
+  .card, .big-title, .sub, .btns, .features { max-height: 98vh; overflow:visible; }
+
+  /* Extra guard: if still overflows (rare), reduce spacing via a scale transform using JS below */
+  </style>
+</head>
+<body>
+
+  <div class="hero-bg" aria-hidden="true"></div>
+
+  <main class="center-wrap" role="main" aria-labelledby="landing-title">
+    <div class="card" id="card">
+      <div class="top-note">Log in or create an account to continue</div>
+
+      <h1 id="landing-title" class="big-title" aria-hidden="true">
+        <span class="line">welcome</span>
+        <span class="line">to</span>
+        <span class="line">your</span>
+        <span class="line">dream</span>
+      </h1>
+
+      <p class="sub">Predict property prices instantly — sign up and start estimating accurate property valuations across states and cities.</p>
+
+      <div class="btns" role="group" aria-label="Auth actions">
+        <a class="btn btn-login" href="{% url 'login' %}">Log in</a>
+        <a class="btn btn-signup" href="{% url 'signup' %}">Sign up</a>
+      </div>
+
+      <div class="features" aria-hidden="true">
+        <div class="feat">⚡ Instant predictions</div>
+        <div class="feat">📊 Clean visual reports</div>
+        <div class="feat">🇮🇳 State & City data</div>
+      </div>
+
+      <div class="hero-credit">AITK</div>
+    </div>
+  </main>
+
+  <script>
+  // Safety: If viewport is unusually small and card is still taller than viewport,
+  // scale the card down so it never creates scrolling.
+  (function(){
+    const card = document.getElementById('card');
+    function fitCard(){
+      // reset transform
+      card.style.transform = 'none';
+      const cardRect = card.getBoundingClientRect();
+      const vh = window.innerHeight;
+      // small tolerance
+      if(cardRect.height > vh - 10){
+        const scale = (vh - 10) / cardRect.height;
+        card.style.transform = 'scale(' + scale + ')';
+        card.style.transformOrigin = 'center top';
+      }
+    }
+    window.addEventListener('resize', fitCard);
+    // run after fonts load
+    window.addEventListener('load', function(){
+      setTimeout(fitCard, 80);
+    });
+  })();
+  </script>
+
+</body>
+</html>

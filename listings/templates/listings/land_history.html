@@ -1,0 +1,53 @@
+{% extends "listings/base_land.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="fw-bold">📜 Land Prediction History</h3>
+    <a href="{% url 'land' %}" class="btn btn-success">+ New Prediction</a>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body p-0">
+
+      <table class="table table-striped table-hover mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th>State</th>
+            <th>City</th>
+            <th>Plot Type</th>
+            <th>Area (sq.ft)</th>
+            <th>Predicted Price (₹)</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for r in records %}
+          <tr>
+            <td>{{ r.state }}</td>
+            <td>{{ r.district }}</td>          <!-- city -->
+            <td>{{ r.soil_type }}</td>         <!-- plot type -->
+            <td>{{ r.land_area }}</td>         <!-- area -->
+            <td class="fw-bold text-success">
+              ₹ {{ r.predicted_price }}
+            </td>
+            <td>{{ r.created_at|date:"d M Y" }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="text-center text-muted py-4">
+              No land predictions found
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+
+      </table>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}

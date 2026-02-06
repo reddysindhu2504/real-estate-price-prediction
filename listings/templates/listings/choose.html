@@ -1,0 +1,98 @@
+{% extends "listings/base_choose.html" %}
+{% block content %}
+
+<div class="choose-wrapper">
+  <div class="container h-100 d-flex flex-column justify-content-center align-items-center text-center">
+
+    <!-- Heading -->
+    <h1 class="fw-bold text-white mb-2">Choose Prediction Type</h1>
+    <p class="text-light opacity-75 mb-5">
+      Select what you want to predict using AI
+    </p>
+
+    <!-- Cards Row -->
+    <div class="row justify-content-center align-items-center g-4 w-100">
+
+      <!-- LAND -->
+      <div class="col-md-5 col-lg-4 d-flex justify-content-center">
+        <div class="choose-card glass"
+             onclick="location.href='{% url 'land' %}'">
+          <div class="icon-circle land">🌍</div>
+          <h4 class="mt-3 fw-bold">Land Price Prediction</h4>
+          <p class="text-light opacity-75">
+            Predict land value based on location & features
+          </p>
+        </div>
+      </div>
+
+      <!-- CONSTRUCTION -->
+      <div class="col-md-5 col-lg-4 d-flex justify-content-center">
+        <div class="choose-card glass"
+             onclick="location.href='{% url 'home' %}'">
+          <div class="icon-circle home">🏗️</div>
+          <h4 class="mt-3 fw-bold">Construction Cost</h4>
+          <p class="text-light opacity-75">
+            Estimate construction cost accurately
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<style>
+/* Full background */
+.choose-wrapper{
+  min-height:100vh;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  display:flex;
+  align-items:center;
+}
+
+/* Card base */
+.choose-card{
+  width:100%;
+  max-width:340px;
+  cursor:pointer;
+  padding:35px 25px;
+  border-radius:26px;
+  transition:all .4s ease;
+  color:#fff;
+}
+
+/* Glass effect */
+.glass{
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.15);
+}
+
+/* Hover effect */
+.choose-card:hover{
+  transform:translateY(-15px) scale(1.05);
+  box-shadow:0 30px 70px rgba(0,0,0,.6);
+}
+
+/* Icon circle */
+.icon-circle{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:42px;
+  margin:0 auto;
+}
+
+/* Icon colors */
+.icon-circle.land{
+  background:linear-gradient(135deg,#00c853,#64dd17);
+}
+.icon-circle.home{
+  background:linear-gradient(135deg,#ff9100,#ff6d00);
+}
+</style>
+
+{% endblock %}
