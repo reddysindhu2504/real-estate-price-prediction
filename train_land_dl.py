@@ -76,3 +76,4 @@ model.fit(X_train, y_train, epochs=50, batch_size=32, verbose=1)
 model.save(MODEL_PATH)
 
 print("✅ LAND ANN MODEL TRAINED & SAVED")
+
