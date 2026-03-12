@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: real-estate-price-prediction
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn realestate_site.wsgi:application
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.13
