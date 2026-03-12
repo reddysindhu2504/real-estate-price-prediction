@@ -1,194 +1,198 @@
 {% extends "listings/base_land.html" %}
 {% load static %}
+
 {% block content %}
+
+<!-- ================= NEURAL NETWORK CANVAS ================= -->
+<canvas id="neuralCanvas"></canvas>
 
 <style>
 :root{
-  --g1:#6366f1;
-  --g2:#22d3ee;
-  --g3:#a78bfa;
+  --neon:#00ffd5;
 }
 
-/* ===== BACKGROUND ===== */
+/* FULL SCREEN NEURAL BACKGROUND */
+#neuralCanvas{
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  background:
+    radial-gradient(circle at center,#020611,#000000);
+}
+
+/* PAGE OVERLAY */
 .page{
   min-height:100vh;
-  padding:70px 0; /* ⬅️ middle thaggincha */
-  background:
-    radial-gradient(circle at 10% 20%,rgba(99,102,241,.25),transparent 40%),
-    radial-gradient(circle at 90% 80%,rgba(34,211,238,.25),transparent 40%),
-    linear-gradient(135deg,#f8fafc,#eef2ff);
-  position:relative;
-  overflow:hidden;
+  padding:70px 0;
+  color:#fff;
 }
 
-/* floating blobs */
-.page::before,.page::after{
-  content:"";
-  position:absolute;
-  width:260px;height:260px;
+/* FLOATING GLASS CARD */
+/* .glass{
+  background:rgba(255,255,255,0.12);
+  backdrop-filter:blur(22px);
+  border-radius:30px;
+  border:1px solid rgba(255,255,255,.25);
+  box-shadow:0 0 60px rgba(0,255,213,.35);
+  animation:float 6s ease-in-out infinite;
+} */
+.glass{
+  background:rgba(255,255,255,0.12);
+  backdrop-filter:blur(22px);
+  border-radius:30px;
+  border:1px solid rgba(255,255,255,.25);
+  box-shadow:0 0 60px rgba(0,255,213,.35);
+}
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-12px)}
+}
+
+/* AI CORE */
+.ai-core{
+  width:100px;height:100px;
   border-radius:50%;
-  filter:blur(80px);
-  opacity:.30;
-  z-index:0;
-}
-.page::before{
-  background:#6366f1;
-  top:-70px;left:-70px;
-}
-.page::after{
-  background:#22d3ee;
-  bottom:-70px;right:-70px;
+  background:radial-gradient(circle,var(--neon),transparent 70%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:42px;
+  box-shadow:0 0 60px var(--neon);
+  animation:pulse 2.5s infinite;
 }
 
-/* ===== CARD ===== */
-.card-box{
-  position:relative;
-  z-index:1;
-  background:rgba(255,255,255,.88);
-  backdrop-filter:blur(18px);
-  border-radius:24px;
-  padding:45px; /* ⬅️ koncham tight */
-  box-shadow:0 25px 50px rgba(0,0,0,.16);
-  overflow:hidden;
-  transition:.4s;
+@keyframes pulse{
+  0%,100%{box-shadow:0 0 40px var(--neon)}
+  50%{box-shadow:0 0 90px var(--neon)}
 }
 
-.card-box:hover{
-  transform:translateY(-6px);
-  box-shadow:0 35px 70px rgba(0,0,0,.2);
-}
-
-/* animated border */
-.card-box::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  padding:2px;
-  border-radius:24px;
-  background:linear-gradient(120deg,var(--g1),var(--g2),var(--g3));
-  background-size:300% 300%;
-  animation:borderMove 7s linear infinite;
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite:xor;
-  pointer-events:none;
-}
-
-@keyframes borderMove{
-  0%{background-position:0% 50%}
-  100%{background-position:300% 50%}
-}
-
-/* ===== HEADER ===== */
+/* TEXT */
 .title{
-  font-weight:900;
-  font-size:32px;
-  background:linear-gradient(135deg,var(--g1),var(--g2));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+  text-shadow:0 0 18px var(--neon);
 }
 
-.header-line{
-  width:90px;
-  height:4px;
-  margin:14px auto;
-  border-radius:10px;
-  background:linear-gradient(90deg,var(--g1),var(--g2));
-}
-
-.subtitle{
-  color:#475569;
-  font-size:14px;
-}
-
-/* ===== FORM ===== */
+/* INPUTS */
 .form-label{
-  font-size:11px;
-  font-weight:800;
-  letter-spacing:1.1px;
-  color:#334155;
+  font-size:.8rem;
+  letter-spacing:1px;
+  color:#d6faff;
 }
 
 .form-control{
-  border-radius:14px;
-  padding:14px 16px;
-  border:1px solid #cbd5e1;
-  transition:.3s;
+  border-radius:18px;
+  padding:15px;
+  border:none;
+}
+
+.form-control:hover{
+  box-shadow:0 0 25px rgba(0,255,213,.5);
 }
 
 .form-control:focus{
-  border-color:var(--g1);
-  box-shadow:0 0 0 3px rgba(99,102,241,.22);
-  transform:translateY(-1px);
+  transform:scale(1.05);
+  box-shadow:0 0 0 3px rgba(0,255,213,.6);
 }
 
-/* ===== BUTTON ===== */
-.btn-predict{
-  position:relative;
-  overflow:hidden;
-  background:linear-gradient(135deg,var(--g1),var(--g2));
-  color:#fff;
+/* BUTTON */
+.ai-btn{
+  background:linear-gradient(135deg,#00ffd5,#00aaff);
   border:none;
-  padding:16px;
-  border-radius:18px;
-  font-weight:900;
-  letter-spacing:.6px;
+  border-radius:22px;
+  padding:20px;
+  font-size:1.15rem;
+  font-weight:800;
+  color:#000;
+  transition:.4s;
 }
 
-.btn-predict::after{
-  content:"";
-  position:absolute;
+.ai-btn:hover{
+  transform:scale(1.08);
+  box-shadow:0 0 55px var(--neon);
+}
+
+/* AI LOADER */
+.ai-loader{
+  position:fixed;
   inset:0;
-  background:linear-gradient(120deg,transparent,rgba(255,255,255,.45),transparent);
-  transform:translateX(-100%);
-  animation:shine 3s infinite;
+  background:#000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  z-index:9999;
+  color:var(--neon);
 }
 
-@keyframes shine{
-  to{transform:translateX(100%)}
+.scan{
+  width:240px;height:240px;
+  border-radius:50%;
+  border:3px solid var(--neon);
+  animation:spin 2s linear infinite;
+  box-shadow:0 0 55px var(--neon);
 }
 
-/* ===== RESULT ===== */
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* RESULT */
 .result{
-  margin-top:45px;
-  padding:30px;
-  border-radius:24px;
-  background:linear-gradient(135deg,#ecfeff,#eef2ff);
-  box-shadow:0 20px 45px rgba(0,0,0,.18);
-  text-align:center;
-  position:relative;
+  background:linear-gradient(135deg,#00ffd5,#38ef7d);
+  color:#000;
+  border-radius:30px;
+  box-shadow:0 0 55px rgba(0,255,213,.9);
   animation:pop .6s ease;
 }
 
 @keyframes pop{
-  from{transform:scale(.9);opacity:0}
+  from{transform:scale(.7);opacity:0}
   to{transform:scale(1);opacity:1}
 }
 
-.result::before{
-  content:"";
-  position:absolute;
-  top:-3px;left:25%;right:25%;
-  height:4px;
-  border-radius:10px;
-  background:linear-gradient(90deg,var(--g1),var(--g2));
+/* INSIGHTS */
+.insight{
+  background:rgba(255,255,255,.15);
+  border-radius:18px;
+  padding:18px;
+  box-shadow:0 0 25px rgba(0,255,213,.4);
+  color: #ffffff;
+}
+/* FIX STATE & CITY DROPDOWN WIDTH ISSUE */
+
+#stateSelect,
+#citySelect {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Prevent dropdown overflow & movement */
+select {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
 
+<!-- ================= AI LOADER ================= -->
+<div id="aiLoader" class="ai-loader">
+  <div class="scan mb-4"></div>
+  <h4 id="aiText">Initializing Neural Engine…</h4>
+  <p>Nodes • Connections • Signals</p>
+</div>
+
+<!-- ================= PAGE ================= -->
 <div class="page">
 <div class="container">
 
   <!-- HEADER -->
-  <div class="text-center mb-4">
-    <h1 class="title">🏡 Land Price Prediction</h1>
-    <div class="header-line"></div>
-    <p class="subtitle">Smart, location-based land value estimation</p>
+  <div class="text-center mb-5">
+    <div class="ai-core mx-auto mb-3">🧠</div>
+    <h1 class="fw-bold title">AI Land Price Prediction</h1>
+    <p class="opacity-75">
+      Deep-learning inspired real-estate intelligence
+    </p>
   </div>
 
   <!-- FORM -->
-  <div class="card-box mx-auto" style="max-width:900px">
-    <form method="post">
+  <div class="glass p-5 mx-auto" style="max-width:1000px">
+    <form method="post" id="predictForm">
       {% csrf_token %}
       <div class="row g-4">
 
@@ -207,12 +211,12 @@
         </div>
 
         <div class="col-md-6">
-          <label class="form-label">PLOT TYPE</label>
+          <label class="form-label">Plot Type</label>
           <select name="plot_type" class="form-control" required>
             <option value="">Select Type</option>
-            <option>Residential Plot</option>
             <option>Commercial Plot</option>
-            <option>Agricultural Plot</option>
+            <option>Residential Plot</option>
+            <option>Industrial Plot</option>
           </select>
         </div>
 
@@ -223,24 +227,142 @@
 
       </div>
 
-      <button class="btn-predict w-100 mt-4">
-        🚀 Predict Land Price
+      <button class="ai-btn w-100 mt-5">
+        🚀 PRICE PREDICTION
       </button>
     </form>
   </div>
 
   <!-- RESULT -->
   {% if result %}
-  <div class="result mx-auto" style="max-width:560px">
-    <small class="text-muted">Estimated Market Value</small>
-    <h2 class="fw-bold mt-2">₹ {{ result|floatformat:0 }}</h2>
-    <p class="mb-0 text-muted">Generated using location & area patterns</p>
+  <div class="result text-center p-4 mt-5 mx-auto" style="max-width:600px">
+    <small>NEURAL ESTIMATED VALUE</small>
+    <h1 id="price" class="fw-bold mt-2">₹ 0</h1>
+    <p>Signal-based • Pattern-driven • Intelligent</p>
+  </div>
+
+  <div class="row mt-4 text-center">
+    <div class="col-md-4"><div class="insight">🧠 High Neural Activation</div></div>
+    <div class="col-md-4"><div class="insight">📊 Strong Market Signals</div></div>
+    <div class="col-md-4"><div class="insight">💎 Premium Investment Zone</div></div>
   </div>
   {% endif %}
 
 </div>
 </div>
+{% if contacts %}
+<div class="mt-5 mx-auto" style="max-width:800px">
+  <h4 class="text-center mb-4 text-white" >🏢 Available Agents</h4>
 
+  <div class="row">
+    {% for agent in contacts %}
+      <div class="col-md-6 mb-3">
+        <div class="insight p-3">
+          <h6 class="fw-bold mb-1">{{ agent.name }}</h6>
+          <p class="mb-1">📍 {{ agent.district }}, {{ agent.state }}</p>
+          <p class="mb-0">📞 {{ agent.phone }}</p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endif %}
 <script src="{% static 'listings/js/state_city_loader.js' %}"></script>
+
+<script>
+/* ================= NEURAL NETWORK BACKGROUND ================= */
+const canvas = document.getElementById("neuralCanvas");
+const ctx = canvas.getContext("2d");
+
+function resize(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener("resize", resize);
+
+class Node{
+  constructor(){
+    this.x=Math.random()*canvas.width;
+    this.y=Math.random()*canvas.height;
+    this.vx=(Math.random()-.5)*0.6;
+    this.vy=(Math.random()-.5)*0.6;
+    this.r=Math.random()*1.8+1;
+  }
+  move(){
+    this.x+=this.vx;
+    this.y+=this.vy;
+    if(this.x<0||this.x>canvas.width) this.vx*=-1;
+    if(this.y<0||this.y>canvas.height) this.vy*=-1;
+  }
+  draw(){
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+    ctx.fillStyle="#00ffd5";
+    ctx.fill();
+  }
+}
+
+const nodes=[];
+const COUNT=Math.floor(window.innerWidth/5); // EXTREME DENSITY
+for(let i=0;i<COUNT;i++) nodes.push(new Node());
+
+function connect(){
+  for(let i=0;i<nodes.length;i++){
+    for(let j=i;j<nodes.length;j++){
+      let dx=nodes[i].x-nodes[j].x;
+      let dy=nodes[i].y-nodes[j].y;
+      let d=Math.sqrt(dx*dx+dy*dy);
+      if(d<130){
+        ctx.strokeStyle=`rgba(0,255,213,${1-d/130})`;
+        ctx.lineWidth=.6;
+        ctx.beginPath();
+        ctx.moveTo(nodes[i].x,nodes[i].y);
+        ctx.lineTo(nodes[j].x,nodes[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  nodes.forEach(n=>{n.move();n.draw();});
+  connect();
+  requestAnimationFrame(animate);
+}
+animate();
+
+/* ================= AI LOADER STORY ================= */
+const steps=[
+ "Initializing Neural Engine…",
+ "Activating hidden layers…",
+ "Processing city signals…",
+ "Evaluating spatial patterns…",
+ "Finalizing prediction…"
+];
+
+document.getElementById("predictForm").addEventListener("submit",()=>{
+  document.getElementById("aiLoader").style.display="flex";
+  let i=0;
+  setInterval(()=>{
+    if(i<steps.length){
+      document.getElementById("aiText").innerText=steps[i++];
+    }
+  },700);
+});
+
+/* ================= PRICE ANIMATION ================= */
+{% if result %}
+let target={{ result|floatformat:0 }} * 100000;
+let c=0;
+let int=setInterval(()=>{
+  c+=Math.ceil(target/40);
+  if(c>=target){c=target;clearInterval(int);}
+  document.getElementById("price").innerText = "₹ " + c.toLocaleString("en-IN");
+},40);
+{% endif %}
+</script>
 
 {% endblock %}

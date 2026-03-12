@@ -30,14 +30,12 @@
               <td class="text-center">{{ r.bedrooms|default:"-" }}</td>
               <td class="text-center">{{ r.bathrooms|default:"-" }}</td>
               <td class="text-end">
-                {# show INR with commas and fallback to lakhs if needed #}
-                {% if r.predicted_price %}
-                  ₹{{ r.predicted_price|floatformat:2|intcomma }}
-                  <br><small class="text-muted">(~ {{ r.predicted_price|floatformat:2|divisibleby:100000 }})</small>
-                {% else %}
-                  <span class="text-muted">-</span>
-                {% endif %}
-              </td>
+{% if r.predicted_price or r.predicted_price_inr %}
+  ₹ {{ r.predicted_price|default:r.predicted_price_inr|floatformat:0|intcomma }}
+{% else %}
+  <span class="text-muted">-</span>
+{% endif %}
+</td>
               <td class="text-center">{{ r.created_at|date:"d M Y, H:i" }}</td>
             </tr>
           {% endfor %}
@@ -49,13 +47,12 @@
               <td class="text-center">{{ r.bedrooms|default:"-" }}</td>
               <td class="text-center">{{ r.bathrooms|default:"-" }}</td>
               <td class="text-end">
-                {% if r.predicted_price_inr %}
-                  ₹{{ r.predicted_price_inr|floatformat:2|intcomma }}
-                  <br><small class="text-muted">(~ {{ r.predicted_price_lakhs|floatformat:2 }} L)</small>
-                {% else %}
-                  <span class="text-muted">-</span>
-                {% endif %}
-              </td>
+{% if r.predicted_price or r.predicted_price_inr %}
+  ₹ {{ r.predicted_price|default:r.predicted_price_inr|floatformat:0|intcomma }}
+{% else %}
+  <span class="text-muted">-</span>
+{% endif %}
+</td>
               <td class="text-center">{{ r.created_at|date:"d M Y, H:i" }}</td>
             </tr>
           {% endfor %}

@@ -1,39 +1,94 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Real Estate Price Predictor</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>Construction Prediction</title>
 
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- Site CSS -->
-  <link rel="stylesheet" href="{% static 'listings/css/site.css' %}">
-  <link rel="stylesheet" href="{% static 'listings/css/style.css' %}">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    /* ================= FIXED NAVBAR ================= */
+    .neural-navbar{
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 9999;
+
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(14px);
+
+      border-bottom: 1px solid rgba(0, 255, 213, 0.35);
+      box-shadow: 0 0 30px rgba(0, 255, 213, 0.35);
+    }
+
+    .neural-navbar .navbar-brand{
+      font-weight: 800;
+      color: #00ffd5 !important;
+      letter-spacing: .5px;
+    }
+
+    .neural-navbar .nav-link{
+      color: #d6faff !important;
+      font-weight: 600;
+      position: relative;
+      padding-bottom: 6px;
+    }
+
+    /* ACTIVE LINK */
+    .neural-navbar .nav-link.active{
+      color: #00ffd5 !important;
+    }
+
+    .neural-navbar .nav-link.active::after{
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 2px;
+      background: #00ffd5;
+      box-shadow: 0 0 12px #00ffd5;
+    }
+
+    /* HOVER EFFECT */
+    .neural-navbar .nav-link:hover{
+      color: #00ffd5 !important;
+      text-shadow: 0 0 10px #00ffd5;
+    }
+
+    /* CONTENT OFFSET */
+    body{
+      padding-top: 85px;
+    }
+  </style>
 </head>
 
-<body class="d-flex flex-column min-vh-100">
+<body>
 
-{% if request.user.is_authenticated %}
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar navbar-expand-lg neural-navbar">
   <div class="container">
 
-    <!-- BRAND → Construction Home -->
-    <a class="navbar-brand fw-bold" href="{% url 'home' %}">
-      🏠 Real Estate AI
+    <!-- BRAND -->
+    <a class="navbar-brand" href="{% url 'home' %}">
+      🧠 Construction AI
     </a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+    <!-- TOGGLER -->
+    <button class="navbar-toggler bg-dark" type="button"
+            data-bs-toggle="collapse" data-bs-target="#landNav">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
+    <!-- LINKS -->
+    <div class="collapse navbar-collapse" id="landNav">
+      <ul class="navbar-nav ms-auto gap-4">
 
-        <!-- HOME → Construction Home ONLY -->
         <li class="nav-item">
           <a class="nav-link {% if request.path == '/home/' %}active{% endif %}"
              href="{% url 'home' %}">
@@ -42,80 +97,46 @@
         </li>
 
         <li class="nav-item">
-          <a class="nav-link {% if '/details' in request.path %}active{% endif %}"
-             href="{% url 'details' %}">
-            Model Details
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link {% if '/history' in request.path %}active{% endif %}"
+          <a class="nav-link {% if 'history' in request.path %}active{% endif %}"
              href="{% url 'history' %}">
             History
           </a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link {% if '/dashboard' in request.path %}active{% endif %}"
+          <a class="nav-link {% if 'dashboard' in request.path %}active{% endif %}"
              href="{% url 'dashboard' %}">
             Dashboard
           </a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link {% if '/about' in request.path %}active{% endif %}"
-             href="{% url 'about' %}">
-            About
+          <a class="nav-link {% if 'details' in request.path %}active{% endif %}"
+             href="{% url 'details' %}">
+            Details
           </a>
         </li>
 
-        <!-- SWITCH → CHOOSE PAGE -->
         <li class="nav-item">
-          <a class="nav-link text-warning fw-semibold"
-             href="{% url 'choose' %}">
+          <a class="nav-link" href="{% url 'choose' %}">
             Switch
           </a>
         </li>
+        
 
-        <!-- USER MENU -->
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="userMenu"
-             role="button" data-bs-toggle="dropdown">
-            {{ request.user.email|default:request.user.username }}
-          </a>
-
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li>
-              <a class="dropdown-item" href="#" onclick="event.preventDefault();document.getElementById('logoutForm').submit();">
-                Logout
-              </a>
-            </li>
-          </ul>
-        </li>
 
       </ul>
     </div>
   </div>
 </nav>
 
-<form id="logoutForm" method="post" action="{% url 'logout' %}" style="display:none;">
-  {% csrf_token %}
-</form>
-{% endif %}
-
-<main class="flex-fill">
-  <div class="container my-5">
-    {% block content %}{% endblock %}
-  </div>
-</main>
-
-<footer class="bg-primary text-white py-3 mt-auto">
-  <div class="container text-center">
-    © 2026 Real Estate Price Predictor
-  </div>
-</footer>
+<!-- ================= PAGE CONTENT ================= -->
+<div class="container mt-5 mb-5">
+  {% block content %}
+  {% endblock %}
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-{% block scripts %}{% endblock %}
+
 </body>
 </html>

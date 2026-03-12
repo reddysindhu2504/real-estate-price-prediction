@@ -1,142 +1,390 @@
 {% extends "listings/base.html" %}
 {% load static %}
-{% load humanize %}
+
 {% block content %}
 
-<div class="form-container card shadow-lg p-4 mx-auto"
-     style="max-width: 800px; border-radius: 12px; background-color: #ffffff;">
+<!-- ================= NEURAL NETWORK CANVAS ================= -->
+<canvas id="neuralCanvas"></canvas>
 
-  <!-- Header -->
-  <div class="text-center mb-3">
-    <h2 class="text-primary fw-bold">🏗️ Construction Cost Prediction</h2>
-    <p class="text-muted">
-      Enter basic property details to get ANN-based construction cost estimation.
+<style>
+:root{
+  --neon:#00ffd5;
+}
+
+/* FULL SCREEN NEURAL BACKGROUND */
+#neuralCanvas{
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  background:
+  radial-gradient(circle at center,#020611,#000000);
+  pointer-events: none;
+}
+
+/* PAGE OVERLAY */
+.page{
+  min-height:100vh;
+  padding:70px 0;
+  color:#fff;
+}
+
+/* FLOATING GLASS CARD */
+/* .glass{
+  background:rgba(255,255,255,0.12);
+  backdrop-filter:blur(22px);
+  border-radius:30px;
+  border:1px solid rgba(255,255,255,.25);
+  box-shadow:0 0 60px rgba(0,255,213,.35);
+  animation:float 6s ease-in-out infinite;
+} */
+.glass{
+  background:rgba(255,255,255,0.12);
+  backdrop-filter:blur(22px);
+  border-radius:30px;
+  border:1px solid rgba(255,255,255,.25);
+  box-shadow:0 0 60px rgba(0,255,213,.35);
+}
+
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-12px)}
+}
+
+/* AI CORE */
+.ai-core{
+  width:100px;height:100px;
+  border-radius:50%;
+  background:radial-gradient(circle,var(--neon),transparent 70%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:42px;
+  box-shadow:0 0 60px var(--neon);
+  animation:pulse 2.5s infinite;
+}
+
+@keyframes pulse{
+  0%,100%{box-shadow:0 0 40px var(--neon)}
+  50%{box-shadow:0 0 90px var(--neon)}
+}
+
+/* TEXT */
+.title{
+  text-shadow:0 0 18px var(--neon);
+}
+
+/* INPUTS */
+.form-label{
+  font-size:.8rem;
+  letter-spacing:1px;
+  color:#d6faff;
+}
+
+.form-control{
+  border-radius:18px;
+  padding:15px;
+  border:none;
+}
+
+.form-control:hover{
+  box-shadow:0 0 25px rgba(0,255,213,.5);
+}
+
+.form-control:focus{
+  transform:scale(1.05);
+  box-shadow:0 0 0 3px rgba(0,255,213,.6);
+}
+
+/* BUTTON */
+.ai-btn{
+  background:linear-gradient(135deg,#00ffd5,#00aaff);
+  border:none;
+  border-radius:22px;
+  padding:20px;
+  font-size:1.15rem;
+  font-weight:800;
+  color:#000;
+  transition:.4s;
+}
+
+.ai-btn:hover{
+  transform:scale(1.08);
+  box-shadow:0 0 55px var(--neon);
+}
+
+/* AI LOADER */
+.ai-loader{
+  position:fixed;
+  inset:0;
+  background:#000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  z-index:9999;
+  color:var(--neon);
+}
+
+.scan{
+  width:240px;height:240px;
+  border-radius:50%;
+  border:3px solid var(--neon);
+  animation:spin 2s linear infinite;
+  box-shadow:0 0 55px var(--neon);
+}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* RESULT */
+.result{
+  background:linear-gradient(135deg,#00ffd5,#38ef7d);
+  color:#000;
+  border-radius:30px;
+  box-shadow:0 0 55px rgba(0,255,213,.9);
+  animation:pop .6s ease;
+}
+
+@keyframes pop{
+  from{transform:scale(.7);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+
+/* INSIGHTS */
+.insight{
+  background:rgba(255,255,255,.15);
+  border-radius:18px;
+  padding:18px;
+  box-shadow:0 0 25px rgba(0,255,213,.4);
+}
+/* FIX STATE & CITY DROPDOWN WIDTH ISSUE */
+
+#stateSelect,
+#citySelect {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Prevent dropdown overflow & movement */
+select {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+</style>
+
+<!-- ================= AI LOADER ================= -->
+<div id="aiLoader" class="ai-loader">
+  <div class="scan mb-4"></div>
+  <h4 id="aiText">Initializing Neural Engine…</h4>
+  <p>Nodes • Connections • Signals</p>
+</div>
+
+<!-- ================= PAGE ================= -->
+<div class="page">
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="text-center mb-5">
+    <div class="ai-core mx-auto mb-3">🧠</div>
+    <h1 class="fw-bold title">AI Construction Price Prediction</h1>
+    <p class="opacity-75">
+      Deep-learning inspired real-estate intelligence
     </p>
   </div>
 
-  <!-- Django messages -->
-  {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-{{ message.tags|default:'info' }}">
-        {{ message }}
+  <!-- FORM -->
+  <div class="glass p-5 mx-auto" style="max-width:1000px">
+    <form method="post" id="predictForm">
+      {% csrf_token %}
+      <div class="row g-4">
+
+        <div class="col-md-6">
+          <label class="form-label">STATE</label>
+          <select id="stateSelect" name="state" class="form-control" required>
+            <option value="">Select State</option>
+          </select>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">DISTRICT</label>
+          <select id="citySelect" name="district" class="form-control" required>
+            <option value="">Select City</option>
+          </select>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">SIZE (Sq.ft)</label>
+         <input type="number" name="size_sqft" class="form-control" placeholder="Enter Size">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">BHK</label>
+          <input type="number" name="bedrooms" class="form-control" placeholder="BHK">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">BATHROOMS</label>
+          <input type="number" name="bathrooms" class="form-control" placeholder="Bathrooms">
+        </div>
+
+         <div class="col-md-4">
+          <label class="form-label">AGE OF PROPERTY</label>
+         <input type="number" name="age" class="form-control" placeholder="Age of Property">
+        </div>
+
       </div>
-    {% endfor %}
-  {% endif %}
 
-  <!-- Form errors -->
-  {% if form.non_field_errors %}
-    <div class="alert alert-danger">
-      {{ form.non_field_errors }}
-    </div>
-  {% endif %}
+      <button class="ai-btn w-100 mt-5">
+        🚀 PRICE PREDICTION
+      </button>
+    </form>
+  </div>
 
-  {% for field in form %}
-    {% if field.errors %}
-      <div class="text-danger small mb-1">
-        {{ field.label }}: {{ field.errors|join:", " }}
-      </div>
-    {% endif %}
-  {% endfor %}
+  <!-- RESULT -->
 
-  <!-- Prediction Form -->
-  <form method="POST" novalidate>
-    {% csrf_token %}
-
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <label class="form-label">State</label>
-        {{ form.state }}
-      </div>
-      <div class="col-md-6 mb-3">
-        <label class="form-label">City</label>
-        {{ form.district }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <label class="form-label">Built-up Area (sq.ft)</label>
-        {{ form.size_sqft }}
-      </div>
-      <div class="col-md-3 mb-3">
-        <label class="form-label">BHK</label>
-        {{ form.bedrooms }}
-      </div>
-      <div class="col-md-3 mb-3">
-        <label class="form-label">Bathrooms</label>
-        {{ form.bathrooms }}
-      </div>
-    </div>
-
-    <!-- ONLY AGE OF BUILDING CENTERED -->
-    <div class="row justify-content-center">
-      <div class="col-md-4 mb-3">
-        <label class="form-label text-center d-block">
-          Age of Building (Years)
-        </label>
-        {{ form.age }}
-      </div>
-    </div>
-
-    {{ form.country }}
-
-    <button type="submit" class="btn btn-primary w-100 mt-2">
-      🔍 Predict Construction Cost
-    </button>
-  </form>
-
-  <!-- Prediction Result -->
-  {% if result_lakhs or result %}
-    <div class="alert alert-success text-center mt-4 shadow-sm">
-      {% if result_lakhs %}
-        <h4 class="mb-1">
-          Estimated Construction Cost: {{ result_lakhs|floatformat:4 }} Lakhs
-        </h4>
-        {% if result %}
-          <div class="small text-muted">
-            (~ ₹{{ result|floatformat:0|intcomma }})
-          </div>
-        {% endif %}
-      {% else %}
-        <h4 class="mb-1">
-          Estimated Construction Cost: ₹{{ result|floatformat:0|intcomma }}
-        </h4>
-      {% endif %}
-
-      {% if saved_state or saved_district %}
-        <p class="small text-muted mt-1">
-          Location: {{ saved_district }}{% if saved_state %}, {{ saved_state }}{% endif %}
-        </p>
-      {% endif %}
-    </div>
-
-    <!-- Contacts -->
-    <div class="card mt-4 shadow-sm">
-      <div class="card-body">
-        <h5 class="fw-bold">Local Construction Contacts</h5>
-
-        {% if contacts %}
-          <ul class="list-group">
-            {% for c in contacts %}
-              <li class="list-group-item">
-                <strong>{{ c.name }}</strong><br>
-                {% if c.locality %}{{ c.locality }} — {% endif %}
-                {{ c.district }}, {{ c.state }}<br>
-                📞 <a href="tel:{{ c.phone }}">{{ c.phone }}</a>
-                {% if c.email %}
-                  | ✉️ <a href="mailto:{{ c.email }}">{{ c.email }}</a>
-                {% endif %}
-              </li>
-            {% endfor %}
-          </ul>
-        {% else %}
-          <p class="text-muted">No local contacts found.</p>
-        {% endif %}
-      </div>
-    </div>
-  {% endif %}
-
+<!-- RESULT -->
+{% if result %}
+<div class="result text-center p-4 mt-5 mx-auto" style="max-width:600px">
+  <small>NEURAL ESTIMATED VALUE</small>
+  <h1 id="price" class="fw-bold mt-2">₹ {{ result|floatformat:0 }}</h1>
+  <p>Signal-based • Pattern-driven • Intelligent</p>
 </div>
 
-<script src="{% static 'listings/js/location_cascade.js' %}"></script>
+
+  <div class="row mt-4 text-center">
+    <div class="col-md-4"><div class="insight">🧠 High Neural Activation</div></div>
+    <div class="col-md-4"><div class="insight">📊 Strong Market Signals</div></div>
+    <div class="col-md-4"><div class="insight">💎 Premium Investment Zone</div></div>
+  </div>
+  {% endif %}
+
+{% if contacts %}
+<div class="mt-5 mx-auto" style="max-width:800px">
+  <h4 class="text-center mb-4" >🏢 Available Agents</h4>
+
+  <div class="row">
+    {% for agent in contacts %}
+      <div class="col-md-6 mb-3">
+        <div class="insight p-3">
+          <h6 class="fw-bold mb-1">{{ agent.name }}</h6>
+          <p class="mb-1">📞 {{ agent.phone }}</p>
+          {% if agent.email %}
+          <p class="mb-0">✉ {{ agent.email }}</p>
+           {% endif %}
+           <p class="mb-1">📍 {{ agent.district }}, {{ agent.state }}</p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+
+<script src="{% static 'listings/js/state_city_loader.js' %}"></script>
+<script>
+/* ================= NEURAL NETWORK BACKGROUND ================= */
+
+const canvas = document.getElementById("neuralCanvas");
+const ctx = canvas.getContext("2d");
+
+function resize(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener("resize", resize);
+
+class Node{
+  constructor(){
+    this.x=Math.random()*canvas.width;
+    this.y=Math.random()*canvas.height;
+    this.vx=(Math.random()-.5)*0.6;
+    this.vy=(Math.random()-.5)*0.6;
+    this.r=Math.random()*1.8+1;
+  }
+  move(){
+    this.x+=this.vx;
+    this.y+=this.vy;
+    if(this.x<0||this.x>canvas.width) this.vx*=-1;
+    if(this.y<0||this.y>canvas.height) this.vy*=-1;
+  }
+  draw(){
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+    ctx.fillStyle="#00ffd5";
+    ctx.fill();
+  }
+}
+
+const nodes=[];
+const COUNT=Math.floor(window.innerWidth/5); // EXTREME DENSITY
+for(let i=0;i<COUNT;i++) nodes.push(new Node());
+
+function connect(){
+  for(let i=0;i<nodes.length;i++){
+    for(let j=i;j<nodes.length;j++){
+      let dx=nodes[i].x-nodes[j].x;
+      let dy=nodes[i].y-nodes[j].y;
+      let d=Math.sqrt(dx*dx+dy*dy);
+      if(d<130){
+        ctx.strokeStyle=`rgba(0,255,213,${1-d/130})`;
+        ctx.lineWidth=.6;
+        ctx.beginPath();
+        ctx.moveTo(nodes[i].x,nodes[i].y);
+        ctx.lineTo(nodes[j].x,nodes[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  nodes.forEach(n=>{n.move();n.draw();});
+  connect();
+  requestAnimationFrame(animate);
+}
+animate();
+
+/* ================= AI LOADER STORY ================= */
+const steps=[
+ "Initializing Neural Engine…",
+ "Activating hidden layers…",
+ "Processing city signals…",
+ "Evaluating spatial patterns…",
+ "Finalizing prediction…"
+];
+
+document.getElementById("predictForm").addEventListener("submit",()=>{
+  document.getElementById("aiLoader").style.display="flex";
+
+  let i=0;
+  setInterval(()=>{
+    if(i<steps.length){
+      document.getElementById("aiText").innerText=steps[i++];
+    }
+  },700);
+});
+/* ================= PRICE ANIMATION ================= */
+{% if result %}
+let target={{ result|floatformat:0 }};
+let c=0;
+
+let int=setInterval(()=>{
+  c+=Math.ceil(target/40);
+
+  if(c>=target){
+    c=target;
+    clearInterval(int);
+  }
+
+  document.getElementById("price").innerText ="₹ " + c.toLocaleString("en-IN");
+},40);
+{% endif %}
+
+
+
+
+</script>
+
 {% endblock %}

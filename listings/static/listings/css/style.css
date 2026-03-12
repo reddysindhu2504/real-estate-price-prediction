@@ -23,7 +23,7 @@ html,body{height:100%;margin:0;font-family:var(--font-sans);background:var(--bg)
 .navbar .container{display:flex;align-items:center;justify-content:space-between}
 .navbar .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.05rem;color:#fff;text-decoration:none}
 .navbar .brand .logo{height:34px;width:34px;border-radius:8px;background:#fff;color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:700}
-.navbar .nav{display:flex;gap:12px;align-items:center}
+/* .navbar .nav{display:flex;gap:12px;align-items:center} */
 .navbar a.nav-link{color:rgba(255,255,255,0.95);text-decoration:none;padding:6px 10px;border-radius:8px}
 .navbar a.nav-link:hover{background:rgba(255,255,255,0.06)}
 

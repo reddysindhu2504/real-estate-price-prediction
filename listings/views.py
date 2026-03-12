@@ -198,181 +198,257 @@ def land_home(request):
 # ---------------------------
 # HOME / PREDICTION
 # ---------------------------
+# @login_required
+# def index(request):
+#     print("INDEX VIEW CALLED")
+#     load_artifacts()
+#     form = PropertyForm(request.POST or None)
+
+#     result = None
+#     result_lakhs = None
+#     contacts = []
+#     saved_state = ""
+#     saved_district = ""
+
+#     if request.method == "POST":
+#         print("POST RECEIVED")
+#         print("Form errors:", form.errors)
+#         if form.is_valid():
+#             data = form.cleaned_data
+#             state = (data.get("state") or "").strip()
+#             district = (data.get("district") or "").strip()
+#             city = (data.get("city") or "").strip() or district
+#             locality = (data.get("locality") or "").strip() or district
+#             saved_state, saved_district = state, district
+
+#             size_sqft = _to_float(data.get("size_sqft"), 0.0)
+#             bedrooms = _to_int(data.get("bedrooms"), 0)
+#             bathrooms = _to_int(data.get("bathrooms"), 1)
+#             age = _to_int(data.get("age"), 0)
+
+#             predictor_input = {
+#                 "state": state,
+#                 "city": city,
+#                 "locality": locality,
+#                 "size_sqft": size_sqft,
+#                 "bedrooms": bedrooms,
+#                 "bathrooms": bathrooms,
+#                 "age": age,
+#                 "bhk": bedrooms,
+#                 "BHK": bedrooms
+#             }
+
+#             # call predictor (returns lakhs)
+#             try:
+#                 price_lakhs = predict_construction_cost(predictor_input)
+
+#                 if price_lakhs is not None:
+#                     result = float(price_lakhs) * 100000
+#                 else:
+#                         result = None
+
+#             except Exception as e:
+#                 print("Prediction error (views):", e)
+#                 traceback.print_exc()
+#                 messages.error(request, "Prediction failed.")
+
+#             # try to compute cluster (best-effort) if pipeline/clusterer present
+#             cluster_label = None
+#             try:
+#                 preproc = None
+#                 if pipeline is not None:
+#                     # safe access to named_steps
+#                     preproc = getattr(pipeline, "named_steps", {}).get("preprocessor") or None
+#                 if preproc is None and pipeline is not None:
+#                     # fallback: try common names
+#                     for name in ("preprocessor","pre","transformer","prep"):
+#                         preproc = getattr(pipeline, "named_steps", {}).get(name)
+#                         if preproc is not None:
+#                             break
+#                 if preproc is not None and clusterer is not None and result is not None:
+#                     # create a minimal dataframe for transform (pipeline expects particular feature names)
+#                     # we will not import pandas here to avoid overhead; use a simple 1-row dict if pipeline accepts it
+#                     # but many sklearn preprocessor.transform expects array or DataFrame — so skip cluster prediction if unsure
+#                     # keep as a best-effort no-fail block
+#                     try:
+#                         import pandas as _pd
+#                         X_for_cluster = _pd.DataFrame([{
+#                             "state": state,
+#                             "city": city,
+#                             "locality": locality,
+#                             "size_sqft": size_sqft,
+#                             "bedrooms": bedrooms,
+#                             "bathrooms": bathrooms,
+#                             "age": age
+#                         }])
+#                         Xp = preproc.transform(X_for_cluster)
+#                         cluster_label = int(clusterer.predict(Xp)[0])
+#                     except Exception:
+#                         cluster_label = None
+#             except Exception:
+#                 cluster_label = None
+
+#             # Save query (ensure bathrooms default is present to avoid DB NOT NULL)
+#             print("Construction predicted:", price_rupees)
+#             if result is not None:
+#                 try:
+#                     PropertyQuery.objects.create(
+#                         user=request.user,
+#                         state=state,
+#                         district=district or city,
+#                         location=locality,
+#                         size_sqft=size_sqft,
+#                         bedrooms=bedrooms,
+#                         bathrooms=bathrooms,
+#                         age=age,
+#                         amenities_score=data.get("amenities_score") or 0,
+#                         monthly_income=data.get("monthly_income"),
+#                         predicted_price=result,
+#                         cluster=cluster_label
+#                     )
+#                 except Exception as e:
+#                     print("DB save failed:", e)
+#                     traceback.print_exc()
+#                     messages.warning(request, "Prediction saved failed.")
+
+#             # load contacts
+#            # load contacts
+#                 try:
+#                     contacts = Realtor.objects.filter(
+#                     state__iexact=state,
+#                     district__iexact=district
+#                     )[:10]
+#                 except Exception:
+#                     contacts = []
+
+
+#             if result is not None:
+#                 messages.success(request, "Prediction generated successfully.")
+#         else:
+#             messages.error(request, "Please correct the form errors.")
+
+#     return render(request, "listings/index.html", {
+#         "form": form,
+#         "result": result,
+#         "result_lakhs": result_lakhs,
+#         "contacts": contacts,
+#         "saved_state": saved_state,
+#         "saved_district": saved_district,
+#         "model_rmse": model_rmse,
+#         "cluster_info": cluster_info
+#     })
 @login_required
 def index(request):
-    load_artifacts()
-    form = PropertyForm(request.POST or None)
-
     result = None
-    result_lakhs = None
     contacts = []
-    saved_state = ""
-    saved_district = ""
-
-    if request.method == "POST":
-        if form.is_valid():
-            data = form.cleaned_data
-            state = (data.get("state") or "").strip()
-            district = (data.get("district") or "").strip()
-            city = (data.get("city") or "").strip() or district
-            locality = (data.get("locality") or "").strip() or district
-            saved_state, saved_district = state, district
-
-            size_sqft = _to_float(data.get("size_sqft"), 0.0)
-            bedrooms = _to_int(data.get("bedrooms"), 0)
-            bathrooms = _to_int(data.get("bathrooms"), 1)
-            age = _to_int(data.get("age"), 0)
-
-            predictor_input = {
-                "state": state,
-                "city": city,
-                "locality": locality,
-                "size_sqft": size_sqft,
-                "bedrooms": bedrooms,
-                "bathrooms": bathrooms,
-                "age": age,
-                "bhk": bedrooms,
-                "BHK": bedrooms
-            }
-
-            # call predictor (returns lakhs)
-            try:
-                price_lakhs =predict_construction_cost(predictor_input)
-                if price_lakhs is not None:
-                    result_lakhs = float(price_lakhs)
-                    result = float(price_lakhs) * 100000.0
-                else:
-                    result = None
-                    result_lakhs = None
-            except Exception as e:
-                print("Prediction error (views):", e)
-                traceback.print_exc()
-                messages.error(request, "Prediction failed.")
-
-            # try to compute cluster (best-effort) if pipeline/clusterer present
-            cluster_label = None
-            try:
-                preproc = None
-                if pipeline is not None:
-                    # safe access to named_steps
-                    preproc = getattr(pipeline, "named_steps", {}).get("preprocessor") or None
-                if preproc is None and pipeline is not None:
-                    # fallback: try common names
-                    for name in ("preprocessor","pre","transformer","prep"):
-                        preproc = getattr(pipeline, "named_steps", {}).get(name)
-                        if preproc is not None:
-                            break
-                if preproc is not None and clusterer is not None and result is not None:
-                    # create a minimal dataframe for transform (pipeline expects particular feature names)
-                    # we will not import pandas here to avoid overhead; use a simple 1-row dict if pipeline accepts it
-                    # but many sklearn preprocessor.transform expects array or DataFrame — so skip cluster prediction if unsure
-                    # keep as a best-effort no-fail block
-                    try:
-                        import pandas as _pd
-                        X_for_cluster = _pd.DataFrame([{
-                            "state": state,
-                            "city": city,
-                            "locality": locality,
-                            "size_sqft": size_sqft,
-                            "bedrooms": bedrooms,
-                            "bathrooms": bathrooms,
-                            "age": age
-                        }])
-                        Xp = preproc.transform(X_for_cluster)
-                        cluster_label = int(clusterer.predict(Xp)[0])
-                    except Exception:
-                        cluster_label = None
-            except Exception:
-                cluster_label = None
-
-            # Save query (ensure bathrooms default is present to avoid DB NOT NULL)
-            if result is not None:
-                try:
-                    PropertyQuery.objects.create(
-                        user=request.user,
-                        state=state,
-                        district=district or city,
-                        location=locality,
-                        size_sqft=size_sqft,
-                        bedrooms=bedrooms,
-                        bathrooms=bathrooms,
-                        age=age,
-                        amenities_score=data.get("amenities_score") or 0,
-                        monthly_income=data.get("monthly_income"),
-                        predicted_price=result,
-                        cluster=cluster_label
-                    )
-                except Exception as e:
-                    print("DB save failed:", e)
-                    traceback.print_exc()
-                    messages.warning(request, "Prediction saved failed.")
-
-            # load contacts
-            try:
-                contacts = Realtor.objects.filter(
-    state__iexact=state,
-    district__iexact=district
-)[:10]
-            except Exception:
-                contacts = []
-
-            if result is not None:
-                messages.success(request, "Prediction generated successfully.")
-        else:
-            messages.error(request, "Please correct the form errors.")
-
-    return render(request, "listings/index.html", {
-        "form": form,
-        "result": result,
-        "result_lakhs": result_lakhs,
-        "contacts": contacts,
-        "saved_state": saved_state,
-        "saved_district": saved_district,
-        "model_rmse": model_rmse,
-        "cluster_info": cluster_info
-    })
-
-
-
-
-@login_required
-#from django.contrib.auth.decorators import login_required
-
-@login_required
-def land_prediction(request):
-    result = None
 
     if request.method == "POST":
         data = {
             "state": request.POST.get("state"),
-            "city": request.POST.get("city"),
-            "plot_type": request.POST.get("plot_type"),
-            "Area": request.POST.get("Area"),
+            "city": request.POST.get("district"),
+            "size_sqft": request.POST.get("size_sqft"),
+            "bhk": request.POST.get("bedrooms"),
+            "age": request.POST.get("age"),
+        }
+
+        # 🔮 Predict construction price
+        result = predict_construction_cost(data)
+
+        state = (data.get("state") or "").strip()
+        district = (data.get("city") or "").strip()
+
+        # 🔐 SAVE TO HISTORY
+        if result:
+            PropertyQuery.objects.create(
+            user=request.user,
+            state=state,
+            district=district,
+            location=district,
+            size_sqft=float(data.get("size_sqft") or 0),
+            bedrooms=int(data.get("bhk") or 0),
+            bathrooms=int(request.POST.get("bathrooms") or 0),
+            age=int(data.get("age") or 0),
+            predicted_price=float(result)
+                )
+            print("✅ Construction history saved")
+
+            # except Exception as e:
+            #     print("❌ Construction history save failed:", e)
+
+        # 🏢 LOAD CONTACTS
+        if state and district:
+            contacts = Realtor.objects.filter(
+                state__iexact=state,
+                district__iexact=district
+            )[:6]
+            print("STATE:", state)
+            print("DISTRICT:", district)
+            print("CONTACT COUNT:", contacts.count())
+
+    return render(request, "listings/index.html", {
+        "result": result,
+        "contacts": contacts
+    })
+
+
+
+@login_required
+def profile(request):
+    return render(request, "listings/profile.html")
+
+@login_required
+def land_prediction(request):
+    result = None
+    contacts = []
+
+    if request.method == "POST":
+        # 📥 Get form data
+        state = (request.POST.get("state") or "").strip()
+        city = (request.POST.get("city") or "").strip()
+        plot_type = request.POST.get("plot_type")
+        area = request.POST.get("Area")
+
+        data = {
+            "state": state,
+            "city": city,
+            "plot_type": plot_type,
+            "Area": area,
         }
 
         # 🔮 Predict land price
         result = predict_land_price(data)
 
-        # 🔐 SAVE TO LAND HISTORY
+        # 🏢 Load matching realtors (same logic as index view)
+        if state and city:
+            contacts = Realtor.objects.filter(
+                state__iexact=state,
+                district__iexact=city
+            )[:6]
+
+            print("LAND STATE:", state)
+            print("LAND CITY:", city)
+            print("CONTACT COUNT:", contacts.count())
+
+        # 💾 Save to land history
         if result is not None and result > 0:
             try:
                 LandQuery.objects.create(
-                    user=request.user,  # ✅ logged-in user
-                    state=(data.get("state") or "").strip(),
-                    district=(data.get("city") or "").strip(),
-                    land_area=float(data.get("Area")) if data.get("Area") else 0.0,
-                    soil_type=(data.get("plot_type") or "Unknown"),
+                    user=request.user,
+                    state=state,
+                    district=city,
+                    land_area=float(area) if area else 0.0,
+                    soil_type=plot_type or "Unknown",
                     road_width=0.0,
                     land_shape="Residential",
                     predicted_price=float(result)
                 )
                 print("✅ Land history saved")
-
             except Exception as e:
                 print("❌ Land history save failed:", e)
 
     return render(request, "listings/land.html", {
-        "result": result
+        "result": result,
+        "contacts": contacts
     })
 # def land_prediction(request):
 #     result = None
@@ -443,12 +519,25 @@ def history(request):
 
 @login_required
 def land_history(request):
-    records = LandQuery.objects.all().order_by("-created_at")
+    qs = LandQuery.objects.all().order_by("-created_at")
+    records = []
 
-    return render(request, "listings/land_history.html", {
-        "records": records
-    })
-# ---------------------------
+    for r in qs:
+        try:
+            price_rupees = int(float(r.predicted_price) * 100000) if r.predicted_price else None
+        except Exception:
+            price_rupees = None
+
+        records.append({
+            "state": r.state,
+            "district": r.district,
+            "soil_type": r.soil_type,
+            "land_area": r.land_area,
+            "predicted_price_inr": price_rupees,
+            "created_at": r.created_at
+        })
+
+    return render(request, "listings/land_history.html", {"records": records})
 # DASHBOARD (ORM-based aggregations)
 # ---------------------------
 @login_required

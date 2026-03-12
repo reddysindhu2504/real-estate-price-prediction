@@ -1,8 +1,6 @@
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
-from .views_land import land_prediction
-from . import views_land
 from django.contrib.auth import views as auth_views
 
 
@@ -18,7 +16,8 @@ urlpatterns = [
         template_name='registration/login.html',
         redirect_authenticated_user=True
     ), name='login'),
-    path('logout/', views.logout_view, name='logout'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
+     path('profile/', views.profile, name='profile'),
     
 
     # choose page

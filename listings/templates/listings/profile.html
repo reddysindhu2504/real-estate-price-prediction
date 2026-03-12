@@ -1,0 +1,18 @@
+{% extends "listings/base.html" %}
+{% block content %}
+
+<div class="container mt-5">
+    <div class="card shadow p-4" style="max-width:600px; margin:auto;">
+        <h3 class="mb-4">My Profile</h3>
+
+        <p><strong>Username:</strong> {{ request.user.username }}</p>
+        <p><strong>Email:</strong> {{ request.user.email }}</p>
+        <p><strong>Date Joined:</strong> {{ request.user.date_joined }}</p>
+
+        <a href="{% url 'choose' %}" class="btn btn-primary mt-3">
+            Back
+        </a>
+    </div>
+</div>
+
+{% endblock %}

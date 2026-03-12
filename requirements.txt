@@ -7,3 +7,4 @@ xgboost
 matplotlib
 tensorflow
 keras
+gunicorn

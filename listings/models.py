@@ -16,7 +16,7 @@ class Realtor(models.Model):
     locality = models.CharField(max_length=200, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def _str_(self):
+    def __str__(self):
         return f"{self.name} - {self.district}, {self.state}"
 
 

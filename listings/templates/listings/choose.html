@@ -1,6 +1,38 @@
 {% extends "listings/base_choose.html" %}
 {% block content %}
+<nav class="navbar navbar-dark bg-dark px-4">
+  <div class="container-fluid">
+    <span class="navbar-brand fw-bold">AI Real Estate</span>
 
+    <div class="dropdown ms-auto">
+      <a class="text-white dropdown-toggle text-decoration-none"
+         href="#"
+         role="button"
+         data-bs-toggle="dropdown">
+        👤 {{ request.user.username }}
+      </a>
+
+      <ul class="dropdown-menu dropdown-menu-end">
+
+        
+          <li>
+            <a class="dropdown-item" href="/admin/">Admin</a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+
+        <li>
+          <form action="{% url 'logout' %}" method="post" class="m-0">
+    {% csrf_token %}
+    <button type="submit" class="dropdown-item text-danger">
+        Logout
+    </button>
+</form>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+</nav>
 <div class="choose-wrapper">
   <div class="container h-100 d-flex flex-column justify-content-center align-items-center text-center">
 
