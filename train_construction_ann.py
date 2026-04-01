@@ -101,8 +101,8 @@ df = pd.read_csv(DATA_PATH)
 # -----------------------
 # FEATURES & TARGET
 # -----------------------
-FEATURES = ["State", "City", "BHK", "Size_in_SqFt", "Age_of_Property"]
-TARGET = "Price_in_Rupees"
+FEATURES = ["state", "city", "bhk", "bathrooms", "age"]
+TARGET = "price_per_sqft"
 
 X = df[FEATURES]
 y = df[TARGET]
@@ -117,8 +117,8 @@ X_train, X_test, y_train, y_test = train_test_split(
 # -----------------------
 # PREPROCESSING
 # -----------------------
-categorical = ["State", "City"]
-numeric = ["BHK", "Size_in_SqFt", "Age_of_Property"]
+categorical = ["state", "city"]
+numeric = ["bhk", "bathrooms", "age"]
 
 preprocessor = ColumnTransformer([
     ("cat", OneHotEncoder(handle_unknown="ignore"), categorical),

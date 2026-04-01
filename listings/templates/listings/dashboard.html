@@ -1,9 +1,8 @@
-{% extends "listings/base.html" %}
+ {% extends "listings/base.html" %}
 {% load static %}
 {% load humanize %}
 {% block content %}
 
-{# safe JSON for JS #}
 {{ avg_by_location|json_script:"avg_by_location_data" }}
 
 <div class="card shadow-sm p-4 mx-auto" style="max-width:1100px;">
@@ -14,10 +13,10 @@
       <h3 class="mb-0">Dashboard</h3>
       <small class="text-muted">Prediction insights & analytics</small>
     </div>
-    <div class="text-end">
+    <!-- <div class="text-end">
       <div><strong>Total predictions:</strong> {{ total }}</div>
       <div><strong>Average price:</strong> ₹{{ avg_price|floatformat:2|intcomma }}</div>
-    </div>
+    </div> -->
   </div>
 
   <div class="row">
@@ -30,15 +29,6 @@
         <div style="height:360px;">
           <canvas id="locBarChart"></canvas>
         </div>
-
-        <ul class="list-group list-group-flush mt-3">
-          {% for loc, avg in avg_by_location|slice:":8" %}
-          <li class="list-group-item d-flex justify-content-between">
-            <span>{{ loc }}</span>
-            <span class="fw-semibold">₹{{ avg|floatformat:2|intcomma }}</span>
-          </li>
-          {% endfor %}
-        </ul>
       {% else %}
         <p class="text-muted">No prediction data available.</p>
       {% endif %}

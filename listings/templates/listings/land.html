@@ -355,13 +355,21 @@ document.getElementById("predictForm").addEventListener("submit",()=>{
 
 /* ================= PRICE ANIMATION ================= */
 {% if result %}
-let target={{ result|floatformat:0 }} * 100000;
-let c=0;
-let int=setInterval(()=>{
-  c+=Math.ceil(target/40);
-  if(c>=target){c=target;clearInterval(int);}
-  document.getElementById("price").innerText = "₹ " + c.toLocaleString("en-IN");
-},40);
+let target = {{ result|floatformat:0 }};
+let c = 0;
+
+let int = setInterval(() => {
+  c += Math.ceil(target / 40);
+
+  if (c >= target) {
+    c = target;
+    clearInterval(int);
+  }
+
+  document.getElementById("price").innerText =
+    "₹ " + c.toLocaleString("en-IN");
+
+}, 40);
 {% endif %}
 </script>
 

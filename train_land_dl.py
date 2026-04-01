@@ -34,23 +34,23 @@ def clean(x):
         return float(x.replace("l", "")) * 1e5
     return float(x)
 
-df["Area"] = df["Area"].apply(clean)
-df["price"] = df["price"].apply(clean)
+# df["Area"] = df["Area"].apply(clean)
+# df["price"] = df["price"].apply(clean)
 
 df = df.dropna()
 
 # -----------------------
 # FEATURES
 # -----------------------
-X = df[["state", "city", "plot_type", "Area"]]
-y = df["price"]
+X = df[["State", "District", "Plot_Type"]]
+y = df["Price_per_sqft"]
+
 
 # -----------------------
 # PREPROCESSOR
 # -----------------------
 preprocessor = ColumnTransformer([
-    ("cat", OneHotEncoder(handle_unknown="ignore"), ["state", "city", "plot_type"]),
-    ("num", StandardScaler(), ["Area"])
+    ("cat", OneHotEncoder(handle_unknown="ignore"), ["State", "District", "Plot_Type"])
 ])
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)

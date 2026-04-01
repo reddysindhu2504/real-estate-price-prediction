@@ -191,12 +191,15 @@ def predict_construction_cost(data):
         # ----------------------------------
         # BUILD INPUT DATAFRAME
         # ----------------------------------
+        bathrooms = _to_int(data.get("bathrooms"), 0)
+
         input_df = pd.DataFrame([{
-            "State": state,
-            "City": city,
-            "BHK": bhk,
-            "Size_in_SqFt": size_sqft,
-            "Age_of_Property": age
+        "state": state,
+        "city": city,
+        "bhk": bhk,
+        "bathrooms": bathrooms,
+        "age": age,
+        "size_sqft": size_sqft
         }])
 
         if settings.DEBUG:
@@ -211,14 +214,13 @@ def predict_construction_cost(data):
         # ----------------------------------
         # PREDICT
         # ----------------------------------
-        y_pred = model.predict(X)
+        y_pred = model.predict(X, verbose=0)
 
-        price_lakhs = float(y_pred[0][0])
+        price_per_sqft = float(y_pred[0][0])
 
-# convert lakhs → rupees
-        price_rupees = price_lakhs
+        total_price = price_per_sqft * size_sqft
 
-        return round(price_rupees, 2)
+        return round(total_price, 2)
 
 
     except Exception as e:

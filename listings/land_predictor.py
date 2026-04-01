@@ -25,54 +25,28 @@ print("🔥 Land ANN model loaded successfully")
 def predict_land_price(data):
     """
     data = {
-        "state": "...",
-        "city": "...",
-        "plot_type": "...",
-        "Area": "2000"
+        "State": "...",
+        "District": "...",
+        "Plot_Type": "..."
     }
     """
 
     try:
-        # -------------------------
-        # 1️⃣ VALIDATE INPUT
-        # -------------------------
-        area = data.get("Area")
 
-        if area is None or str(area).strip() == "":
-            return None
-
-        area = float(area)
-        if area <= 0:
-            return None
-
-        # -------------------------
-        # 2️⃣ CREATE DATAFRAME (SAME AS TRAINING)
-        # -------------------------
+        # create dataframe same as training dataset
         df = pd.DataFrame([{
-            "state": str(data.get("state")).strip().lower(),
-            "city": str(data.get("city")).strip().lower(),
-            "plot_type": str(data.get("plot_type")).strip(),
-            "Area": area
+            "State": str(data.get("State")).strip(),
+            "District": str(data.get("District")).strip(),
+            "Plot_Type": str(data.get("Plot_Type")).strip()
         }])
 
-        # -------------------------
-        # 3️⃣ PREPROCESS
-        # -------------------------
+        # preprocess
         X = preprocessor.transform(df)
 
-        # -------------------------
-        # 4️⃣ ANN PREDICTION
-        # -------------------------
+        # ANN prediction (price per sqft)
         y_pred = model.predict(X, verbose=0)[0][0]
 
-        # -------------------------
-        # 5️⃣ SAFETY CHECKS (🚑 FIX FOR ₹ inf)
-        # -------------------------
         if np.isnan(y_pred) or np.isinf(y_pred):
-            return None
-
-        # unrealistic values guard
-        if y_pred <= 0 or y_pred > 1e10:
             return None
 
         return round(float(y_pred), 2)

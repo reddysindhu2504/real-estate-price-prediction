@@ -31,7 +31,7 @@
             <td>{{ r.soil_type }}</td>         <!-- plot type -->
             <td>{{ r.land_area }}</td>         <!-- area -->
             <td class="fw-bold text-success">
-              ₹ {{ r.predicted_price_inr|intcomma }}
+              ₹ {{ r.predicted_price|intcomma }}
             </td>
             <td>{{ r.created_at|date:"d M Y" }}</td>
           </tr>
